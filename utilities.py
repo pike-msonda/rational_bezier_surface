@@ -4,6 +4,7 @@
 """
 import pcl
 import numpy as np
+from random import sample
 from scipy.misc import comb
 
 class Points:
@@ -46,17 +47,38 @@ class Bat:
 
     def __init__(self, dimension, population_size):
         self.dimension = dimension
+        self.population_size = population_size
 
-    def objective_function(self, function):
-        fx = function(self.dimension)
-        return fx
+    def intialise_population(self, x, y, z):
+        """
+            Initialise the bat population. 
+            params
+                x: <ndarray>
+                y: <ndarray>
+                z: <ndarray>
+        """
+        pop_x = []
+        pop_y = []
+        pop_z = []
+        print ("Creating a {} population of dimension {}".format(
+            self.population_size, self.dimension))
+        for i in range (self.population_size):
+            pop_x.append(sample(list(x), self.dimension))
+            pop_y.append(sample(list(y), self.dimension))
+            pop_z.append(sample(list(z), self.dimension))
+        return (pop_x,pop_y, pop_z)
+
+    def intialise_weights(self):
+        """
+            Create random weights
+        """
+        return np.random.uniform(-1, 0, size =self.dimension)
+
+    def objective_function(self, u, v):
+        
+        return 
 
 class RationalBezierSurface:
-
-    def __init__ (self, u, v):
-        self.u = u
-        self.v = v
-
     def bernstein_polynomial(self, i, n, t):
          return comb(n, i) * (t**(n - i)) * (1 - t)**i
 
