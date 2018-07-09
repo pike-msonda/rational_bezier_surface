@@ -74,14 +74,25 @@ class Bat:
         """
         return np.random.uniform(-1, 0, size =self.dimension)
 
-    def objective_function(self, u, v):
+    def objective_function(self,u, v):
+        """
+            Objective function fo the Bat Algorithm
+            params:
+
+        """
         
-        return 
+        return 0
 
-class RationalBezierSurface:
     def bernstein_polynomial(self, i, n, t):
-         return comb(n, i) * (t**(n - i)) * (1 - t)**i
+        """
+            Bernstein Polynomial function
+            params:
+                i: <int> order
+                n: <int> degree
+                t: <int> 
+        """
 
+        return comb(n, i) * (t**(n - i)) * (1 - t)**i
 
-
-    
+    def blending_values(self, min, max, nTimes):
+        return np.linspace(min, max, nTimes)
