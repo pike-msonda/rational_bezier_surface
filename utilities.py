@@ -20,9 +20,63 @@ class Points:
         """
         points = ""
         if type == "pcd":
-            points = self.pcl_load(self.point_file)
+            points = self.pcl_load()
+        return points
 
-        return self.split_points(points)
+    def split_points(self, points):
+        """
+            Separates point data into x, y, z 
+            params:
+                points: <list>
+        """ 
+        print(points)
+        x = np.array([p[0] for p in points])
+        y = np.array([p[1] for p in points])
+        z = np.array([p[2] for p in points])
+
+        return x, y, z
+
+    def pcl_load(self):
+        cloud = pcl.load(self.point_file)
+        points = cloud.to_list()
+        return points
+
+
+
+class Bat:
+
+    def __init__(self, order, population_size, u, v):
+        self.order = order
+        self.population_size = population_size
+        self.u = u
+        self.v = v
+        self.num_control_points = np.power(order, 2)
+
+    def intialise_population(self,points):
+        """
+            Initialise the bat population. 
+            params
+                x: <ndarray>
+                y: <ndarray>
+                z: <ndarray>
+        """
+        population = []
+        print ("Creating {} bat populations".format(self.population_size))
+
+        for i in range (self.population_size):
+            print("Creating population {}".format(i))
+            population.append(sample(points, self.u*self.v))
+        
+        return population
+
+    def intialise_weights(self):
+        """
+            Create random weights
+        """
+        return np.random.uniform(-1, 0, size =(self.u, self.v))
+
+    def form_column_vector(self, surface, n, m):
+        return np.reshape(surface, (m,n))
 
     def split_points(self, points):
         """
@@ -36,51 +90,31 @@ class Points:
 
         return x, y, z
 
-    def pcl_load(self, filename):
-        cloud = pcl.load(self.point_file)
-        points = cloud.to_list()
-        return points
-
-
-
-class Bat:
-
-    def __init__(self, dimension, population_size):
-        self.dimension = dimension
-        self.population_size = population_size
-
-    def intialise_population(self, x, y, z):
-        """
-            Initialise the bat population. 
-            params
-                x: <ndarray>
-                y: <ndarray>
-                z: <ndarray>
-        """
-        pop_x = []
-        pop_y = []
-        pop_z = []
-        print ("Creating a {} population of dimension {}".format(
-            self.population_size, self.dimension))
-        for i in range (self.population_size):
-            pop_x.append(sample(list(x), self.dimension))
-            pop_y.append(sample(list(y), self.dimension))
-            pop_z.append(sample(list(z), self.dimension))
-        return (pop_x,pop_y, pop_z)
-
-    def intialise_weights(self):
-        """
-            Create random weights
-        """
-        return np.random.uniform(-1, 0, size =self.dimension)
-
-    def objective_function(self,u, v):
+    def objective_function(self,bats):
         """
             Objective function fo the Bat Algorithm
             params:
-
+                u: <tuple>
+                v: <tuple>
         """
-        
+        weights = self.intialise_weights()
+        print(weights.shape)
+        blending_constant = max([self.u, self.v])
+        t =  self.blending_values(0,1, blending_constant)
+        for b in range(0, self.population_size):
+            x, y, z = self.split_points(bats[0])
+            x = self.form_column_vector(np.array(x), self.v, self.u)
+            y = self.form_column_vector(np.array(y), self.v, self.u)
+            z = self.form_column_vector(np.array(z), self.v, self.u)
+            for i in range(0, self.u):
+                for j  in range(0, self.v):
+                    u_polynomial =  self.bernstein_polynomial(i,self.u,blending_constant)
+                    v_polynomial =  self.bernstein_polynomial(j,self.v,blending_constant)
+                    xres = [weights[i][j] * u_polynomial * v_polynomial * x[i][j]]
+                    yres = [weights[i][j] * u_polynomial * v_polynomial * y[i][j]]
+                    xres = [weights[i][j] * u_polynomial * v_polynomial * z[i][j]]
+            
+                
         return 0
 
     def bernstein_polynomial(self, i, n, t):

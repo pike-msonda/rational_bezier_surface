@@ -8,15 +8,13 @@ from utilities import Points, Bat
 
 if __name__ == "__main__":
     point_util =  Points("bunny.pcd") #Load point data
-    bat_util = Bat(10, 40)
-    x, y, z = point_util.load_points()
+    bat_util = Bat(4, 40, 16, 4)
+    points = point_util.load_points()
     t = bat_util.blending_values(0, 1, 10)
-    polynomials = [bat_util.bernstein_polynomial(i, len(x), t)
-        for i in range(0, len(x))]
-    print(len(polynomials))
+    bats = bat_util.intialise_population(points)
+    poly = bat_util.bernstein_polynomial(0, 0 ,t)
+    fx = bat_util.objective_function(bats)
     # # Initialise bat population
-    # u = bat_util.intialise_population(x,y,z)
-    # v = bat_util.intialise_population(x,y,z)
 
 
 
