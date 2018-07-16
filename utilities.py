@@ -101,6 +101,10 @@ class Bat:
         print(weights.shape)
         blending_constant = max([self.u, self.v])
         t =  self.blending_values(0,1, blending_constant)
+        xnum, ynum, znum = [],[],[]
+        xden, yden, zden = [],[],[]
+        point = ""
+        ax,ay,az = [], [], [] 
         for b in range(0, self.population_size):
             x, y, z = self.split_points(bats[0])
             x = self.form_column_vector(np.array(x), self.v, self.u)
@@ -108,13 +112,27 @@ class Bat:
             z = self.form_column_vector(np.array(z), self.v, self.u)
             for i in range(0, self.u):
                 for j  in range(0, self.v):
-                    u_polynomial =  self.bernstein_polynomial(i,self.u,blending_constant)
-                    v_polynomial =  self.bernstein_polynomial(j,self.v,blending_constant)
-                    xres = [weights[i][j] * u_polynomial * v_polynomial * x[i][j]]
-                    yres = [weights[i][j] * u_polynomial * v_polynomial * y[i][j]]
-                    xres = [weights[i][j] * u_polynomial * v_polynomial * z[i][j]]
-            
-                
+                    point = (x[i][j], y[i][j], z[i][j])
+                    u_polynomial =  self.bernstein_polynomial(i,self.u,t)
+                    v_polynomial =  self.bernstein_polynomial(j,self.v,t)
+                    xnum.append(weights[i][j] * u_polynomial * v_polynomial * x[i][j])
+                    ynum.append(weights[i][j] * u_polynomial * v_polynomial * y[i][j])
+                    znum.append(weights[i][j] * u_polynomial * v_polynomial * z[i][j])
+                    xden.append(weights[i][j] * u_polynomial * v_polynomial)
+                    yden.append(weights[i][j] * u_polynomial * v_polynomial)
+                    zden.append(weights[i][j] * u_polynomial * v_polynomial)
+
+            xref = np.divide(sum(xnum), sum(xden))
+            #print(x)
+            #print(xref)
+            yref = np.divide(np.sum(ynum), sum(yden))
+            zref = np.divide(sum(znum), sum(zden))
+            ax.append(np.power(point[0], 2) - xref)
+            ay.append(np.power(point[1], 2) - yref)
+            az.append(np.power(point[2], 2) - zref)
+        print(sum(ax)) 
+        print(sum(ay))  
+        print(sum(az)) 
         return 0
 
     def bernstein_polynomial(self, i, n, t):
