@@ -92,7 +92,7 @@ class Bat:
 
     def objective_function(self,bats):
         """
-            Objective function fo the Bat Algorithm
+            Objective function: Minimum of two squares
             params:
                 u: <tuple>
                 v: <tuple>
@@ -102,16 +102,17 @@ class Bat:
         t =  self.blending_values(0,1, blending_constant)
         xnum, ynum, znum = [],[],[]
         xden, yden, zden = [],[],[]
-        point = ""
-        ax,ay,az = [], [], [] 
+        rx, ry, rz = [],[],[]
+        err_x, err_y, err_z = [],[],[]
+        point = []
         for b in range(0, self.population_size):
-            x, y, z = self.split_points(bats[0])
+            x, y, z = self.split_points(bats[b])
             x = self.form_column_vector(np.array(x), self.v, self.u)
             y = self.form_column_vector(np.array(y), self.v, self.u)
             z = self.form_column_vector(np.array(z), self.v, self.u)
             for i in range(0, self.u):
                 for j  in range(0, self.v):
-                    point = (x[i][j], y[i][j], z[i][j])
+                    point.append((x[i][j], y[i][j], z[i][j]))
                     u_polynomial =  self.bernstein_polynomial(i,self.u,t)
                     v_polynomial =  self.bernstein_polynomial(j,self.v,t)
                     xnum.append(sum(np.multiply(weights[i][j], np.multiply(x[i][j],
@@ -130,12 +131,15 @@ class Bat:
             xref = np.divide(sum(xnum), sum(xden))
             yref = np.divide(np.sum(ynum), sum(yden))
             zref = np.divide(sum(znum), sum(zden))
-            ax.append(np.power(point[0], 2) - xref)
-            ay.append(np.power(point[1], 2) - yref)
-            az.append(np.power(point[2], 2) - zref)
-        err_x =  sum(ax)
-        err_y = sum(ay)
-        err_z = sum(az)
+            for p in point:
+                rx.append(np.power(p[0], 2) - np.power(xref, 2))
+                ry.append(np.power(p[1], 2) - np.power(yref, 2))
+                rz.append(np.power(p[2], 2) - np.power(zref, 2))
+            err_x.append(sum(rx))
+            err_y.append(sum(ry))
+            err_z.append(sum(rz))
+            rx,ry,rz, point= [],[],[], []
+            
         return err_x, err_y, err_z
 
     def bernstein_polynomial(self, i, n, t):

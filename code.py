@@ -13,7 +13,8 @@ if __name__ == "__main__":
     t = bat_util.blending_values(0, 1, 10)
     bats = bat_util.intialise_population(points)
     poly = bat_util.bernstein_polynomial(0, 0 ,t)
-    fx = bat_util.objective_function(bats)
+    fx, fy, fz = bat_util.objective_function(bats)
+    print(list(zip(fx,fy,fz)))
     # # Initialise bat population
 
 
