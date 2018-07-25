@@ -18,15 +18,13 @@ def bernstein_polynomial(i, n, t):
             params:
                 i: <int> order
                 n: <int> degree
-                t: <int> 
+                t: <int> blending constant
         """
 
         return comb(n, i) * (t**(n - i)) * (1 - t)**i
 
 if __name__ == "__main__":
     t =  np.linspace(0, 1, num=10)
-    poly = Bernstein(1,1)(t)
-    print (poly)
-    print(bernstein_polynomial(1,1, t))
+    print(bernstein_polynomial(1,0, t))
 
 
